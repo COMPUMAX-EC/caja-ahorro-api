@@ -18,4 +18,5 @@ ignore = ["B008"]  # Depends() en los parámetros es el patrón de FastAPI
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+pythonpath = ["."]
 filterwarnings = ["ignore:JWT_SECRET"]
