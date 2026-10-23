@@ -1,0 +1,46 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  calidad:
+    name: Lint, pruebas y seguridad
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -r requirements.txt pytest httpx ruff bandit pip-audit
+      - name: Lint y formato (ruff)
+        run: ruff check app tests && ruff format --check app tests
+      - name: Pruebas (pytest)
+        run: pytest -q
+      - name: Análisis de seguridad del código (bandit)
+        run: bandit -q -r app
+      - name: Vulnerabilidades en dependencias (pip-audit)
+        run: pip-audit -r requirements.txt
+
+  contenedor:
+    name: Imagen Docker
+    needs: calidad
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Construir
+        run: docker build -t caja-api:ci .
+      - name: Probar la imagen
+        run: |
+          docker run -d --name caja -p 8080:8080 -e JWT_SECRET=ci-$(openssl rand -hex 16) caja-api:ci
+          for i in $(seq 20); do curl -fsS http://localhost:8080/salud && break; sleep 1; done
+          curl -fsS http://localhost:8080/metrics | grep -q caja_http_requests_total
+          docker logs caja
+      - name: Validar docker-compose
+        run: docker compose config -q

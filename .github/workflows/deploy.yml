@@ -1,0 +1,42 @@
+name: Deploy a Cloud Run
+
+# Corre cuando CI pasa en main. No hace nada hasta configurar en el repositorio (Settings → Secrets and variables → Actions):
+#   variables: GCP_PROJECT_ID, GCP_REGION (p. ej. us-central1)
+#   secrets:   GCP_WORKLOAD_IDENTITY_PROVIDER, GCP_SERVICE_ACCOUNT
+# y en Secret Manager los secretos caja-jwt-secret y caja-tesorero-clave. Ver docs/despliegue.md.
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write # autenticación sin llaves (Workload Identity Federation)
+
+jobs:
+  deploy:
+    if: vars.GCP_PROJECT_ID != '' && (github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+      - uses: google-github-actions/deploy-cloudrun@v2
+        id: deploy
+        with:
+          service: caja-ahorro-api
+          project_id: ${{ vars.GCP_PROJECT_ID }}
+          region: ${{ vars.GCP_REGION }}
+          source: .
+          # Escala a cero cuando nadie la usa (cabe en la capa gratuita); una sola instancia porque usa SQLite
+          flags: --allow-unauthenticated --min-instances=0 --max-instances=1 --memory=512Mi
+          env_vars: CAJA_TESORERO_USUARIO=tesorero
+          secrets: |
+            JWT_SECRET=caja-jwt-secret:latest
+            CAJA_TESORERO_CLAVE=caja-tesorero-clave:latest
+      - name: Probar el servicio desplegado
+        run: curl -fsS "${{ steps.deploy.outputs.url }}/salud"

@@ -1,0 +1,29 @@
+# Entorno local completo: API + Prometheus + Grafana.
+#   docker compose up --build
+#   API: http://localhost:8080/docs · Prometheus: http://localhost:9090 · Grafana: http://localhost:3000 (admin / admin la primera vez)
+services:
+  api:
+    build: .
+    ports: ["8080:8080"]
+    environment:
+      JWT_SECRET: ${JWT_SECRET:-cambia-este-secreto-en-local-solamente}
+      CAJA_TESORERO_USUARIO: tesorero
+      CAJA_TESORERO_CLAVE: ${CAJA_TESORERO_CLAVE:-clave-local-tesorero}
+    volumes: ["caja-data:/data"]
+
+  prometheus:
+    image: prom/prometheus:v3.5.0
+    volumes: ["./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro"]
+    ports: ["9090:9090"]
+    depends_on: [api]
+
+  grafana:
+    image: grafana/grafana:12.1.0
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
+    ports: ["3000:3000"]
+    depends_on: [prometheus]
+
+volumes:
+  caja-data:
