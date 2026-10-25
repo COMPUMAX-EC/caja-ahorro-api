@@ -18,6 +18,10 @@ APORTE_MENSUAL_CENTS = int(os.environ.get("APORTE_MENSUAL_CENTS", "500"))  # $5 
 VECES_AHORRO_PRESTAMO = int(os.environ.get("VECES_AHORRO_PRESTAMO", "3"))  # préstamo máximo = 3 × lo ahorrado
 TASA_MORA_ANUAL = float(os.environ.get("TASA_MORA_ANUAL", "0.10"))  # recargo sobre la cuota vencida
 
-# Alertas: en Ecuador las operaciones en efectivo desde USD 10.000 se reportan a la UAFE
+# Alertas UAFE: el RESU incluye operaciones desde USD 10.000, y las de una misma persona que juntas llegan a ese valor
+# en 30 días, en efectivo o no
 UMBRAL_UAFE_CENTS = 10_000_00
+VENTANA_RESU_DIAS = 30
+FRACC_VENTANA_DIAS = 7
+FRACC_MIN_OPERACIONES = 3
 UMBRAL_RETIRO_ALTO_CENTS = int(os.environ.get("UMBRAL_RETIRO_ALTO_CENTS", "200000"))  # $2.000

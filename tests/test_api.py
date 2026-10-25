@@ -68,12 +68,18 @@ def test_ahorro_aporte_y_retiro(client, tes):
 
 def test_alertas_uafe_y_fraccionamiento(client, tes):
     socio_id, _ = nuevo_socio(client, tes)
-    assert mover(client, tes, socio_id, "deposito", "10000").json()["alertas"] == ["uafe_efectivo"]
+    assert mover(client, tes, socio_id, "deposito", "10000", efectivo=False).json()["alertas"] == ["resu_individual"]
+    # Acumulado en 30 días, en efectivo o no: una sola alerta por racha
     socio2, _ = nuevo_socio(client, tes, "beto")
-    mover(client, tes, socio2, "deposito", "6000")
-    assert mover(client, tes, socio2, "deposito", "4500").json()["alertas"] == ["fraccionamiento"]
-    assert mover(client, tes, socio2, "deposito", "4500", efectivo=False).json()["alertas"] == []
-    assert len(client.get("/alertas", headers=tes).json()) == 2
+    assert mover(client, tes, socio2, "deposito", "6000", efectivo=False).json()["alertas"] == []
+    assert mover(client, tes, socio2, "deposito", "4500", efectivo=False).json()["alertas"] == ["resu_acumulado"]
+    assert mover(client, tes, socio2, "deposito", "100", efectivo=False).json()["alertas"] == []
+    # Fraccionamiento: tres operaciones en efectivo bajo el umbral que juntas lo superan
+    socio3, _ = nuevo_socio(client, tes, "carla")
+    assert mover(client, tes, socio3, "deposito", "3900").json()["alertas"] == []
+    assert mover(client, tes, socio3, "deposito", "3800").json()["alertas"] == []
+    assert mover(client, tes, socio3, "deposito", "3700").json()["alertas"] == ["resu_acumulado", "fraccionamiento"]
+    assert len(client.get("/alertas", headers=tes).json()) == 4
 
 
 def test_prestamo_rechazado_por_encaje(client, tes):
