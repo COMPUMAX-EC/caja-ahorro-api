@@ -8,8 +8,8 @@ solidario, registrado en la SEPS). Resuelve lo que muchas cajas todavía llevan 
 - **Préstamos**: simulación y **tabla de amortización** con método **francés** (cuota fija) o **alemán** (capital fijo),
   aprobación con **encaje** (hasta 3 veces lo ahorrado y aportado) y desembolso al ahorro del socio.
 - **Mora**: días de atraso y recargo por cuota vencida, cobro de cuotas e **índice de morosidad** de la cartera.
-- **Alertas**: operaciones en efectivo desde USD 10.000 (reporte a la **UAFE**), fraccionamiento de depósitos en 7 días y
-  retiros altos.
+- **Alertas**: operaciones para el RESU de la **UAFE** (desde USD 10.000, o varias de un mismo socio que juntas llegan a
+  ese valor en 30 días, en efectivo o no), posible fraccionamiento en efectivo en 7 días y retiros altos.
 - **Auditoría**: cada operación que mueve dinero queda registrada con quién la hizo.
 
 > Es una demo con datos de prueba, pensada como proyecto de portafolio. No está en producción en ninguna institución.
@@ -61,7 +61,7 @@ se puede prestar, tasa de mora y umbral de retiro alto.
 
 A demo REST API for an Ecuadorian community savings and credit fund (*caja de ahorro*). It covers members and
 contributions, savings, loans with French and German amortization schedules, overdue payments and the portfolio
-delinquency ratio, UAFE cash-reporting alerts, and an audit log. Built with FastAPI, JWT auth with roles, Prometheus and
+delinquency ratio, UAFE threshold-reporting (RESU) alerts, and an audit log. Built with FastAPI, JWT auth with roles, Prometheus and
 Grafana, Docker, GitHub Actions CI/CD and Google Cloud Run.
 
 Licencia: MIT.
