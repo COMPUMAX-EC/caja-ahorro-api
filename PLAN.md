@@ -3,8 +3,8 @@
 | | |
 |---|---|
 | **Sector objetivo** | Banca y fintech (bancos, cooperativas, pagos digitales) |
-| **Segmento** | A: instituciones grandes con vacantes TI de entrada y nivel medio |
-| **Esfuerzo asignado** | 8 % del tiempo de proyectos (dentro del 25 % de banca) |
+| **Segmento** | A (único segmento del plan) |
+| **Esfuerzo asignado** | 14 % del tiempo de proyectos (dentro del 50 % de banca y fintech) |
 | **Horizonte** | 9-nov-2026 → 31-ene-2027 |
 
 ## Para quién se diseña
