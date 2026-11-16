@@ -1,33 +1,33 @@
-# Plan del proyecto
+# Project plan
 
 | | |
 |---|---|
-| **Sector objetivo** | Banca y fintech (bancos, cooperativas, pagos digitales) |
-| **Segmento** | A (único segmento del plan) |
-| **Esfuerzo asignado** | 14 % del tiempo de proyectos (dentro del 50 % de banca y fintech) |
-| **Horizonte** | 9-nov-2026 → 31-ene-2027 |
+| **Target sector** | Banking and fintech (banks, cooperatives, digital payments) |
+| **Segment** | A (the plan's only segment) |
+| **Allocated effort** | 14% of project time (within the 50% for banking and fintech) |
+| **Horizon** | 9 Nov 2026 → 31 Jan 2027 |
 
-## Para quién se diseña
+## Who it is designed for
 
-Cajas de ahorro y cooperativas de los segmentos 3 a 5 de la SEPS, y equipos de TI de cooperativas grandes (JEP, cooperativas del segmento 1) y bancos que necesitan control de crédito, mora y alertas UAFE.
+Savings funds and cooperatives in SEPS segments 3 to 5, and IT teams at large cooperatives (JEP, segment-1 cooperatives) and banks that need credit, arrears and UAFE-alert control.
 
-## Metas
+## Goals
 
-**Hasta 30-nov-2026**
-- [ ] Demo pública en Cloud Run con datos de prueba y enlace en el README
-- [ ] Reporte de cartera por vencimiento y provisiones en un endpoint con pruebas
+**By 30 Nov 2026**
+- [ ] Public demo on Cloud Run with test data and a link in the README
+- [ ] Portfolio report by maturity and provisions in an endpoint with tests
 
-**Hasta 31-dic-2026**
-- [ ] Integración con fineract-lab: la misma tabla de amortización comparada contra Fineract en CI
-- [ ] Tablero Grafana con morosidad por segmento y alertas UAFE
+**By 31 Dec 2026**
+- [ ] Integration with fineract-lab: the same amortization schedule compared against Fineract in CI
+- [ ] Grafana dashboard with delinquency by segment and UAFE alerts
 
-**Hasta 31-ene-2027**
-- [ ] Caso de uso documentado de punta a punta (socio → préstamo → mora → alerta) con capturas
-- [ ] Revisión de seguridad con OWASP ASVS nivel 1 y resultados en docs/
+**By 31 Jan 2027**
+- [ ] End-to-end documented use case (member → loan → arrears → alert) with screenshots
+- [ ] Security review against OWASP ASVS level 1 with results in docs/
 
-## Fuera de alcance
+## Out of scope
 
-Conexión con datos reales de socios o con el sistema de la SEPS.
+Connecting to real member data or to the SEPS system.
 
 ---
-Revisión cada domingo: avance de metas y horas dedicadas. Plan general de sectores en COMPUMAX-EC/red-contactos-ti (privado).
+Reviewed every Sunday: progress on goals and hours spent. Overall sector plan in COMPUMAX-EC/red-contactos-ti (private).
