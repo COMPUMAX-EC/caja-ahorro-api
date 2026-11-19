@@ -1,9 +1,9 @@
 name: Deploy a Cloud Run
 
-# Corre cuando CI pasa en main. No hace nada hasta configurar en el repositorio (Settings → Secrets and variables → Actions):
-#   variables: GCP_PROJECT_ID, GCP_REGION (p. ej. us-central1)
+# Runs when CI passes on main. Does nothing until the repository is configured (Settings → Secrets and variables → Actions):
+#   variables: GCP_PROJECT_ID, GCP_REGION (e.g. us-central1)
 #   secrets:   GCP_WORKLOAD_IDENTITY_PROVIDER, GCP_SERVICE_ACCOUNT
-# y en Secret Manager los secretos caja-jwt-secret y caja-tesorero-clave. Ver docs/despliegue.md.
+# plus the secrets caja-jwt-secret and caja-tesorero-clave in Secret Manager. See docs/deployment.md.
 on:
   workflow_run:
     workflows: [CI]

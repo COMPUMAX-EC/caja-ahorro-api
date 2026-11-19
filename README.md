@@ -1,67 +1,65 @@
-# Caja de Ahorro Comunitaria API
+# Community Savings Fund API
 
-API REST de demostración para una **caja de ahorro y crédito comunitaria** de Ecuador (sector financiero popular y
-solidario, registrado en la SEPS). Resuelve lo que muchas cajas todavía llevan en cuadernos o en Excel:
+🇬🇧 **English** · 🇪🇨 [Español](README.es.md)
 
-- **Socios y aportes**: registro de socios, certificados de aportación y estado de cuenta.
-- **Ahorros**: depósitos y retiros de ventanilla, con control de saldo.
-- **Préstamos**: simulación y **tabla de amortización** con método **francés** (cuota fija) o **alemán** (capital fijo),
-  aprobación con **encaje** (hasta 3 veces lo ahorrado y aportado) y desembolso al ahorro del socio.
-- **Mora**: días de atraso y recargo por cuota vencida, cobro de cuotas e **índice de morosidad** de la cartera.
-- **Alertas**: operaciones para el RESU de la **UAFE** (desde USD 10.000, o varias de un mismo socio que juntas llegan a
-  ese valor en 30 días, en efectivo o no), posible fraccionamiento en efectivo en 7 días y retiros altos.
-- **Auditoría**: cada operación que mueve dinero queda registrada con quién la hizo.
+A demo REST API for an Ecuadorian **community savings and credit fund** (*caja de ahorro*, part of the popular and
+solidarity financial sector registered with the SEPS). It covers what many of these funds still keep in notebooks or
+spreadsheets:
 
-> Es una demo con datos de prueba, pensada como proyecto de portafolio. No está en producción en ninguna institución.
+- **Members and contributions**: member registry, contribution certificates and account statements.
+- **Savings**: counter deposits and withdrawals, with balance control.
+- **Loans**: simulation and **amortization schedule** with the **French** (fixed installment) or **German** (fixed
+  principal) method, approval subject to a **savings-backed limit** (up to 3 times what the member has saved and
+  contributed) and disbursement to the member's savings.
+- **Arrears**: days overdue and a surcharge per overdue installment, installment collection and the portfolio
+  **delinquency ratio**.
+- **Alerts**: transactions for the **UAFE** RESU threshold report (from USD 10,000, or several by the same member that
+  add up to that amount within 30 days, cash or not), possible cash structuring within 7 days, and large withdrawals.
+- **Audit**: every transaction that moves money is logged with who made it.
 
-## Qué muestra
+> This is a demo with test data, built as a portfolio project. It is not in production at any institution.
 
-| Habilidad | Dónde |
+## What it shows
+
+| Skill | Where |
 |---|---|
-| Dominio financiero (ahorro y crédito) | `app/amortizacion.py`, reglas de encaje, mora y UAFE en `app/main.py` y `app/alertas.py` |
-| APIs REST | FastAPI con documentación OpenAPI en `/docs` |
-| Seguridad | JWT de 15 minutos, roles (tesorero/socio), claves con PBKDF2 (600.000 iteraciones), límite de intentos de inicio de sesión, cabeceras de seguridad, montos en centavos enteros, consultas parametrizadas, bandit y pip-audit en CI |
-| CI/CD | GitHub Actions: ruff, pytest, bandit, pip-audit, construcción y prueba de la imagen Docker, despliegue automático |
-| Nube pública | Google Cloud Run (escala a cero), Secret Manager y Workload Identity Federation (sin llaves en el repositorio) |
-| Observabilidad | Métricas Prometheus en `/metrics` y tablero de Grafana listo (peticiones, errores, latencia p95, operaciones, alertas, morosidad) |
+| Financial domain (savings and credit) | `app/amortizacion.py`, savings-backed limit, arrears and UAFE rules in `app/main.py` and `app/alertas.py` |
+| REST APIs | FastAPI with OpenAPI docs at `/docs` |
+| Security | 15-minute JWTs, roles (treasurer/member), PBKDF2 password hashing (600,000 iterations), login rate limiting, security headers, amounts in integer cents, parameterized queries, bandit and pip-audit in CI |
+| CI/CD | GitHub Actions: ruff, pytest, bandit, pip-audit, Docker image build and test, automatic deployment |
+| Public cloud | Google Cloud Run (scales to zero), Secret Manager and Workload Identity Federation (no keys in the repo) |
+| Observability | Prometheus metrics at `/metrics` and a ready-made Grafana dashboard (requests, errors, p95 latency, transactions, alerts, delinquency) |
 
-## Probarlo
+## Try it
 
 ```bash
-python -m venv .venv && .venv/Scripts/activate   # en Linux/macOS: source .venv/bin/activate
+python -m venv .venv && .venv/Scripts/activate   # on Linux/macOS: source .venv/bin/activate
 pip install -r requirements.txt pytest httpx
 pytest -q
 ```
 
-Con Docker (API, Prometheus y Grafana):
+With Docker (API, Prometheus and Grafana):
 
 ```bash
 docker compose up --build
 ```
 
-- API y documentación: <http://localhost:8080/docs> (usuario `tesorero`, clave `clave-local-tesorero`)
-- Grafana: <http://localhost:3000>, tablero *Caja de ahorro — operación*
+- API and docs: <http://localhost:8080/docs> (user `tesorero`, password `clave-local-tesorero`)
+- Grafana: <http://localhost:3000>, dashboard *Caja de ahorro — operación*
 
-Flujo de ejemplo en `/docs`: `POST /auth/token` → `POST /socios` → `POST /movimientos` (depósito y aporte) →
+Example flow in `/docs`: `POST /auth/token` → `POST /socios` → `POST /movimientos` (deposit and contribution) →
 `POST /prestamos/simular` → `POST /prestamos` → `POST /prestamos/{id}/aprobar` → `GET /prestamos/{id}` →
 `GET /reportes/cartera`.
 
-## Desplegar
+The API routes and field names are in Spanish, as used by Ecuadorian funds.
 
-Ver [docs/despliegue.md](docs/despliegue.md): Cloud Run con la capa gratuita y alerta de presupuesto.
+## Deploy
 
-## Reglas configurables
+See [docs/deployment.md](docs/deployment.md): Cloud Run on the free tier with a budget alert.
 
-Las define la asamblea de cada caja; aquí son variables de entorno (`app/config.py`): aporte mensual, veces el ahorro que
-se puede prestar, tasa de mora y umbral de retiro alto.
+## Configurable rules
 
----
+Each fund's general assembly sets them; here they are environment variables (`app/config.py`): monthly contribution,
+how many times savings can be lent, arrears rate and the large-withdrawal threshold.
 
-## In English
-
-A demo REST API for an Ecuadorian community savings and credit fund (*caja de ahorro*). It covers members and
-contributions, savings, loans with French and German amortization schedules, overdue payments and the portfolio
-delinquency ratio, UAFE threshold-reporting (RESU) alerts, and an audit log. Built with FastAPI, JWT auth with roles, Prometheus and
-Grafana, Docker, GitHub Actions CI/CD and Google Cloud Run.
-
-Licencia: MIT.
+License: MIT.
