@@ -21,6 +21,8 @@ jobs:
       - run: pip install -r requirements.txt pytest httpx ruff bandit pip-audit
       - name: Lint y formato (ruff)
         run: ruff check app tests && ruff format --check app tests
+      - name: Documentación de procesos (secciones, flujo Mermaid, enlaces, endpoints)
+        run: python scripts/check_docs.py
       - name: Pruebas (pytest)
         run: pytest -q
       - name: Análisis de seguridad del código (bandit)
