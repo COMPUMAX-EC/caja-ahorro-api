@@ -2,6 +2,32 @@
 
 🇬🇧 **English** · 🇪🇨 [Español](README.es.md)
 
+> **1-minute case study**
+
+**Business problem.** Many Ecuadorian community savings funds (*cajas de ahorro*) still keep members, savings and loans in notebooks or spreadsheets. That means hand-made amortization tables, arrears found late, and no trace of the cash movements the UAFE anti-money-laundering report asks for.
+
+**Solution.** A small, secure REST API that does the fund's daily work: members and contributions, deposits and withdrawals, loans with their schedule, arrears, UAFE alerts and an audit log.
+
+```mermaid
+flowchart LR
+  U[Treasurer or member] -->|JWT, roles| A[FastAPI REST<br/>/docs OpenAPI]
+  A --> R[Rules: French/German schedule,<br/>savings-backed limit, arrears, UAFE alerts]
+  R --> D[(Database<br/>amounts in integer cents)]
+  A --> L[Audit log]
+  A --> M[/metrics/] --> P[Prometheus] --> G[Grafana dashboard]
+  C[GitHub Actions: ruff, pytest,<br/>bandit, pip-audit, Docker] -.-> A
+```
+
+**Measured impact**
+- **17 automated tests** (8 for amortization, 9 for the API flow) on every push, plus ruff, bandit and pip-audit; CI runs in under a minute ([workflow](https://github.com/COMPUMAX-EC/caja-ahorro-api/actions/workflows/ci.yml)).
+- **Every loan schedule computed in integer cents**, French and German methods, so totals never drift by rounding.
+- **UAFE alerts built in:** single movements from USD 10,000, several that add up to it within 30 days, and possible cash structuring within 7 days.
+- **Every money movement is audited** with who made it.
+- Not measured yet: no fund uses it in production; Cloud Run deployment is ready but not switched on.
+
+---
+
+
 A demo REST API for an Ecuadorian **community savings and credit fund** (*caja de ahorro*, part of the popular and
 solidarity financial sector registered with the SEPS). It covers what many of these funds still keep in notebooks or
 spreadsheets:

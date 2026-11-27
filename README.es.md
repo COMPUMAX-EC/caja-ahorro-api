@@ -2,6 +2,32 @@
 
 🇬🇧 [English](README.md) · 🇪🇨 **Español**
 
+> **Caso de estudio en 1 minuto**
+
+**Problema de negocio.** Muchas cajas de ahorro comunitarias de Ecuador todavía llevan socios, ahorros y préstamos en cuadernos o en Excel. Eso significa tablas de amortización hechas a mano, mora detectada tarde y ningún rastro de los movimientos de efectivo que pide el reporte de la UAFE.
+
+**Solución.** Una API REST pequeña y segura que hace el trabajo diario de la caja: socios y aportes, depósitos y retiros, préstamos con su tabla, mora, alertas UAFE y bitácora de auditoría.
+
+```mermaid
+flowchart LR
+  U[Tesorero o socio] -->|JWT, roles| A[FastAPI REST<br/>/docs OpenAPI]
+  A --> R[Reglas: tabla francés/alemán,<br/>cupo por ahorro, mora, alertas UAFE]
+  R --> D[(Base de datos<br/>montos en centavos)]
+  A --> L[Bitácora de auditoría]
+  A --> M[/metrics/] --> P[Prometheus] --> G[Tablero Grafana]
+  C[GitHub Actions: ruff, pytest,<br/>bandit, pip-audit, Docker] -.-> A
+```
+
+**Impacto medido**
+- **17 pruebas automáticas** (8 de amortización, 9 del flujo de la API) en cada push, más ruff, bandit y pip-audit; el CI tarda menos de un minuto ([workflow](https://github.com/COMPUMAX-EC/caja-ahorro-api/actions/workflows/ci.yml)).
+- **Cada tabla de amortización en centavos enteros**, método francés y alemán, para que los totales nunca se desvíen por redondeo.
+- **Alertas UAFE incluidas:** movimientos desde USD 10.000, varios que suman ese monto en 30 días y posible fraccionamiento de efectivo en 7 días.
+- **Cada movimiento de dinero queda auditado** con quién lo hizo.
+- Aún sin medir: ninguna caja lo usa en producción; el despliegue en Cloud Run está listo pero no activado.
+
+---
+
+
 API REST de demostración para una **caja de ahorro y crédito comunitaria** de Ecuador (sector financiero popular y
 solidario, registrado en la SEPS). Resuelve lo que muchas cajas todavía llevan en cuadernos o en Excel:
 
