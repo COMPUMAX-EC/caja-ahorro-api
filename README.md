@@ -45,6 +45,11 @@ spreadsheets:
 
 > This is a demo with test data, built as a portfolio project. It is not in production at any institution.
 
+## Process documentation as code
+
+Savings, loan disbursement and installment collection are documented with Mermaid flows, procedures and controls in
+[`docs/procesos/`](docs/procesos/README.md); CI validates sections, links and endpoints (`scripts/check_docs.py`).
+
 ## What it shows
 
 | Skill | Where |
