@@ -126,3 +126,11 @@ def test_metricas_y_cabeceras(client):
     r = client.get("/salud")
     assert r.headers["X-Content-Type-Options"] == "nosniff"
     assert "caja_http_requests_total" in client.get("/metrics").text
+
+
+def test_endpoint_requires_treasurer(client, tes):
+    assert client.get("/reportes/par").status_code == 401
+    _, ana = nuevo_socio(client, tes)
+    assert client.get("/reportes/par", headers=ana).status_code == 403
+    r = client.get("/reportes/par", headers=tes).json()
+    assert r["cartera"] == "0.00" and r["par"]["PAR1"]["ratio"] == 0.0

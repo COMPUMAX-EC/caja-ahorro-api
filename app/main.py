@@ -18,7 +18,7 @@ from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from prometheus_client import CONTENT_TYPE_LATEST, generate_latest
 from pydantic import BaseModel, Field
 
-from app import alertas, amortizacion, config, db, security
+from app import alertas, amortizacion, config, db, par, security
 from app.metrics import CARTERA, LATENCIA, LOGIN_FALLIDO, MOROSIDAD, OPERACIONES, PETICIONES
 
 
@@ -360,6 +360,30 @@ def cartera(user: Tesorero) -> dict:
     CARTERA.set(pendiente)
     MOROSIDAD.set(ratio)
     return {"cartera": dolares(pendiente), "vencido": dolares(vencido), "morosidad": round(ratio, 4)}
+
+
+@app.get("/reportes/par", tags=["reportes"])
+def reporte_par(user: Tesorero) -> dict:
+    """Portfolio at risk PAR 1/30/90: outstanding principal of loans by days late of their oldest unpaid installment."""
+    conn = db.connect()
+    try:
+        prestamos = [
+            {
+                "id": p["id"],
+                "cuotas": [
+                    {"vence": c["vence"], "capital_cents": c["capital_cents"], "pagada": c["pagada"]}
+                    for c in conn.execute("SELECT * FROM cuotas WHERE prestamo_id = ?", (p["id"],))
+                ],
+            }
+            for p in conn.execute("SELECT id FROM prestamos WHERE estado = 'aprobado'")
+        ]
+    finally:
+        conn.close()
+    r = par.par_report(prestamos, date.today())
+    return {
+        "cartera": dolares(r["cartera_cents"]),
+        "par": {k: {"capital": dolares(v["capital_cents"]), "prestamos": v["prestamos"], "ratio": v["ratio"]} for k, v in r["par"].items()},
+    }
 
 
 @app.get("/alertas", tags=["reportes"])
